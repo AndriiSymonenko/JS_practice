@@ -1,6 +1,6 @@
 import checkNumInputs from './checkNumInputs';
 
-const forms = () => {
+const forms = (state) => {
     const form = document.querySelectorAll('form'),
         inputs = document.querySelectorAll('input');
 
@@ -36,6 +36,11 @@ const forms = () => {
             item.appendChild(statusMessage);
 
             const formData = new FormData(item);
+            if (item.getAttribute('data-calc') === 'end') {
+                for (let key in state) {
+                    formData.append(key, state[key]); // добавление объекта с данными калькулятора
+                }
+            }
             postDate('assets/server.php', formData)
                 .then(result => {
                     console.log(result);

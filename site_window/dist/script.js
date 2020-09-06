@@ -17810,7 +17810,7 @@ window.addEventListener('DOMContentLoaded', function () {
   Object(_modules_tabs__WEBPACK_IMPORTED_MODULE_2__["default"])('.glazing_slider', '.glazing_block', '.glazing_content', 'active');
   Object(_modules_tabs__WEBPACK_IMPORTED_MODULE_2__["default"])('.decoration_slider', '.no_click', '.decoration_content > div > div', 'after_click');
   Object(_modules_tabs__WEBPACK_IMPORTED_MODULE_2__["default"])('.balcon_icons', '.balcon_icons_img', '.big_img > img', 'do_image_more', 'inline-block');
-  Object(_modules_forms__WEBPACK_IMPORTED_MODULE_3__["default"])();
+  Object(_modules_forms__WEBPACK_IMPORTED_MODULE_3__["default"])(modalState);
 });
 console.log('1');
 
@@ -17872,7 +17872,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-var forms = function forms() {
+var forms = function forms(state) {
   var form = document.querySelectorAll('form'),
       inputs = document.querySelectorAll('input'); //Проверка является ли значение числом  
 
@@ -17925,6 +17925,13 @@ var forms = function forms() {
       statusMessage.classList.add('status');
       item.appendChild(statusMessage);
       var formData = new FormData(item);
+
+      if (item.getAttribute('data-calc') === 'end') {
+        for (var key in state) {
+          formData.append(key, state[key]); // добавление объекта с данными калькулятора
+        }
+      }
+
       postDate('assets/server.php', formData).then(function (result) {
         console.log(result);
         statusMessage.innerHTML = message.success;
@@ -18032,19 +18039,54 @@ __webpack_require__.r(__webpack_exports__);
 
 var changeModal = function changeModal(state) {
   var windowForm = document.querySelectorAll('.balcon_icons_img'),
-      windowWidth = document.querySelector('#width'),
-      windowHeight = document.querySelector('#height'),
-      windowType = document.querySelector('#type'),
+      windowWidth = document.querySelectorAll('#width'),
+      windowHeight = document.querySelectorAll('#height'),
+      windowType = document.querySelectorAll('#view_type'),
       windowProfile = document.querySelectorAll('.checkbox'); //Проверка является ли значение числом      
 
   Object(_checkNumInputs__WEBPACK_IMPORTED_MODULE_1__["default"])('#width');
   Object(_checkNumInputs__WEBPACK_IMPORTED_MODULE_1__["default"])('#height');
-  windowForm.forEach(function (item, i) {
-    item.addEventListener('click', function () {
-      state.form = i;
-      console.log(state);
+
+  function bindActionElement(event, element, property) {
+    element.forEach(function (item, i) {
+      item.addEventListener(event, function () {
+        switch (item.nodeName) {
+          //имя элемента приходит в верхнем регистре
+          case 'SPAN':
+            state[property] = i;
+            break;
+
+          case 'INPUT':
+            if (item.getAttribute('type') === 'checkbox') {
+              i === 0 ? state[property] = 'Холодное' : state[property] = 'Тёплое';
+              element.forEach(function (box, j) {
+                box.checked = false;
+
+                if (i == j) {
+                  box.checked = true;
+                }
+              });
+            } else {
+              state[property] = item.value;
+            }
+
+            break;
+
+          case 'SELECT':
+            state[property] = item.value;
+            break;
+        }
+
+        console.log(state);
+      });
     });
-  });
+  }
+
+  bindActionElement('click', windowForm, 'form');
+  bindActionElement('input', windowHeight, 'height');
+  bindActionElement('input', windowWidth, 'width');
+  bindActionElement('change', windowType, 'type');
+  bindActionElement('change', windowProfile, 'profile');
 };
 
 /* harmony default export */ __webpack_exports__["default"] = (changeModal);

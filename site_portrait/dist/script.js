@@ -931,11 +931,15 @@ module.exports = g;
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _modules_modals__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./modules/modals */ "./src/js/modules/modals.js");
+/* harmony import */ var _modules_sliders__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./modules/sliders */ "./src/js/modules/sliders.js");
+
 
 window.addEventListener('DOMContentLoaded', function () {
   'use strict';
 
   Object(_modules_modals__WEBPACK_IMPORTED_MODULE_0__["default"])();
+  Object(_modules_sliders__WEBPACK_IMPORTED_MODULE_1__["default"])('.feedback-slider-item', '', '.main-prev-btn', '.main-next-btn');
+  Object(_modules_sliders__WEBPACK_IMPORTED_MODULE_1__["default"])('.main-slider-item', 'vertical');
 });
 
 /***/ }),
@@ -954,8 +958,10 @@ __webpack_require__.r(__webpack_exports__);
 
 
 var modals = function modals() {
+  var buttonPressed = false;
+
   function bindModal(triggerSelector, modalSelector, closeSelector) {
-    var closeClickOverlay = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : true;
+    var destroy = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : false;
     var trigger = document.querySelectorAll(triggerSelector),
         modal = document.querySelector(modalSelector),
         close = document.querySelector(closeSelector),
@@ -967,8 +973,15 @@ var modals = function modals() {
           event.preventDefault();
         }
 
+        buttonPressed = true;
+
+        if (destroy) {
+          item.remove();
+        }
+
         windows.forEach(function (item) {
           item.style.display = 'none';
+          item.classList.add('animated', 'fadeIn');
         });
         modal.style.display = 'block';
         document.body.style.overflow = 'hidden';
@@ -984,7 +997,7 @@ var modals = function modals() {
       document.body.style.marginRight = "0px";
     });
     modal.addEventListener('click', function (event) {
-      if (event.target === modal && closeClickOverlay) {
+      if (event.target === modal) {
         modal.style.display = 'none';
         windows.forEach(function (item) {
           item.style.display = 'none';
@@ -1007,6 +1020,8 @@ var modals = function modals() {
       if (!display) {
         document.querySelector(selector).style.display = 'block';
         document.body.style.overflow = 'hidden';
+        scroll = calcScroll();
+        document.body.style.marginRight = "".concat(scroll, "px");
       }
     }, time);
   }
@@ -1021,14 +1036,109 @@ var modals = function modals() {
     var scrollWidth = div.offsetWidth - div.clientWidth;
     div.remove();
     return scrollWidth;
+  } //Show gift by ScrollDown
+
+
+  function openByScroll(selector) {
+    window.addEventListener('scroll', function () {
+      if (!buttonPressed && window.pageYOffset + document.documentElement.clientHeight >= document.documentElement.scrollHeight) {
+        document.querySelector(selector).click();
+      }
+    });
   }
 
   bindModal('.button-design', '.popup-design', '.popup-design .popup-close');
   bindModal('.button-consultation', '.popup-consultation', '.popup-consultation .popup-close');
-  shnowModalByTime('.popup-consultation', 2000);
+  bindModal('.fixed-gift', '.popup-gift', '.popup-gift .popup-close', true);
+  openByScroll('.fixed-gift'); // shnowModalByTime('.popup-consultation', 2000);
 };
 
 /* harmony default export */ __webpack_exports__["default"] = (modals);
+
+/***/ }),
+
+/***/ "./src/js/modules/sliders.js":
+/*!***********************************!*\
+  !*** ./src/js/modules/sliders.js ***!
+  \***********************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var core_js_modules_web_dom_collections_for_each__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! core-js/modules/web.dom-collections.for-each */ "./node_modules/core-js/modules/web.dom-collections.for-each.js");
+/* harmony import */ var core_js_modules_web_dom_collections_for_each__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_web_dom_collections_for_each__WEBPACK_IMPORTED_MODULE_0__);
+
+
+var sliders = function sliders(slides, direction, prev, next) {
+  var slideIndex = 1,
+      paused = false;
+  var items = document.querySelectorAll(slides);
+
+  function showSlides(n) {
+    if (n > items.length) {
+      slideIndex = 1;
+    }
+
+    if (n < 1) {
+      slideIndex = items.length;
+    }
+
+    items.forEach(function (item) {
+      item.classList.add('animated');
+      item.style.display = 'none';
+    });
+    items[slideIndex - 1].style.display = 'block';
+  }
+
+  showSlides(slideIndex);
+
+  function plusSlide(n) {
+    showSlides(slideIndex += n);
+  }
+
+  try {
+    var prevButton = document.querySelector(prev),
+        nextButton = document.querySelector(next);
+    prevButton.addEventListener('click', function () {
+      plusSlide(-1);
+      items[slideIndex - 1].classList.remove('slideInLeft');
+      items[slideIndex - 1].classList.add('slideInRight');
+    });
+    nextButton.addEventListener('click', function () {
+      plusSlide(1);
+      items[slideIndex - 1].classList.remove('slideInRight');
+      items[slideIndex - 1].classList.add('slideInLeft');
+    });
+  } catch (error) {}
+
+  ;
+
+  function activateAnimation() {
+    if (direction === 'vertical') {
+      paused = setInterval(function () {
+        plusSlide(1);
+        items[slideIndex - 1].classList.add('slideInDown');
+      }, 3000);
+    } else {
+      paused = setInterval(function () {
+        plusSlide(1);
+        items[slideIndex - 1].classList.remove('slideInRight');
+        items[slideIndex - 1].classList.add('slideInLeft');
+      }, 3000);
+    }
+  }
+
+  activateAnimation();
+  items[0].parentNode.addEventListener('mouseenter', function () {
+    clearInterval(paused);
+  });
+  items[0].parentNode.addEventListener('mouseleave', function () {
+    activateAnimation();
+  });
+};
+
+/* harmony default export */ __webpack_exports__["default"] = (sliders);
 
 /***/ })
 

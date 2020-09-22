@@ -1,12 +1,15 @@
-// import checkNumInputs from './checkNumInputs';
+// import checkTextInput from './modules/checkTextInput';
+import {
+    postDate
+} from '../services/requests'
+
 
 const forms = () => {
     const form = document.querySelectorAll('form'),
         inputs = document.querySelectorAll('input'),
         upload = document.querySelectorAll('[name="upload"]');
 
-    //Проверка является ли значение числом  
-    // checkNumInputs('input[name="user_phone"]');
+
 
     const message = {
         loading: 'Загрузка...',
@@ -23,14 +26,7 @@ const forms = () => {
     }
 
 
-    const postDate = async (url, data) => {
 
-        let result = await fetch(url, {
-            method: 'POST',
-            body: data,
-        });
-        return await result.text();
-    };
 
     const clearInputs = () => {
         inputs.forEach(item => {

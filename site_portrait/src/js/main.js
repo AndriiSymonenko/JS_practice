@@ -8,6 +8,8 @@ import calc from './modules/calc';
 import filter from './modules/filter';
 import picSize from './modules/picSize';
 import accordion from './modules/accordion';
+import burger from "./modules/burger";
+import scroll from "./modules/scroll";
 
 window.addEventListener('DOMContentLoaded', () => {
     'use strict';
@@ -24,4 +26,6 @@ window.addEventListener('DOMContentLoaded', () => {
     filter();
     picSize('.sizes-block');
     accordion('.accordion-heading', '.accordion-block', '.often-questions__active-style');
+    burger('.burger-menu', '.burger');
+    scroll('.pageup');
 });

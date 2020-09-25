@@ -10,6 +10,7 @@ import picSize from './modules/picSize';
 import accordion from './modules/accordion';
 import burger from "./modules/burger";
 import scroll from "./modules/scroll";
+import drop from "./modules/drop";
 
 window.addEventListener('DOMContentLoaded', () => {
     'use strict';
@@ -28,4 +29,5 @@ window.addEventListener('DOMContentLoaded', () => {
     accordion('.accordion-heading', '.accordion-block', '.often-questions__active-style');
     burger('.burger-menu', '.burger');
     scroll('.pageup');
+    drop();
 });
